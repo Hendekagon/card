@@ -4,7 +4,13 @@ A Christmas card
 
 ## Usage
 
-Generate Javascript code with lein cljbuild
+Generate Javascript code with:
+
+lein cljsbuild auto
+
+or
+
+lein cljsbuild once
 
 FIXME
 
