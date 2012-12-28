@@ -1,14 +1,19 @@
 (ns card.ui
+  "Javascript interop for displaying the the card with HTML5 canvas"
   (:require
-    [card.x.core :as card]
+    [card.core :as card]
   )
 )
 
-(def pi2 (* 2 Math/PI))
-
 (defn create-image-data [context w h] (. context createImageData w h))
 
+(defn put-image-data!
+  ([context image-data x y] (. context putImageData image-data x y))
+  ([context image-data] (put-image-data! context image-data 0 0))
+)
+
 (defn context
+  "Make a context and image-data from the given canvas element"
   ([] (context (. js/document getElementById "canvas")))
   ([canvas] (context canvas (. canvas getContext "2d")) )
   ([canvas context]
@@ -21,13 +26,15 @@
 )
 
 (defn thread*
+  "Do the function f at regular intervals and send the results to g, starting with x"
   ([g f x] (. js/window setTimeout
              (fn [x]
                (g x)
-               (thread* g f (f x))) 10 x))
+               (thread* g f (f x))) 100 x))
 )
 
 (defn pixel!
+  "set the given pixel xy in image-data to rgba"
   ([image-data xy rgba] (pixel! (.-data image-data) (.-width image-data) (.-height image-data) xy rgba))
   ([data w h [x y] rgba]
     (doall (map
@@ -38,16 +45,17 @@
   )
 )
 
-(defn pixels! [image-data points rgba]
+(defn pixels!
+  "set the given points in image-data to rgba"
+  [image-data points rgba]
   (doseq
     [xy points]
     (pixel! image-data xy rgba)
   )
+  image-data
 )
 
 (defn scale [xy] (map (comp int (partial * 512)) xy))
-
-(defn polygon [n] (map (fn [a] [(Math/cos a) (Math/sin a)] ) (range 0 pi2 (/ pi2 n))))
 
 (defn make-ui
   ([] (make-ui (context) ))
@@ -55,12 +63,14 @@
   ([context image-data]
     (thread*
       (fn [points]
-          (pixels! image-data (map scale points) [(+ 200 (rand-int 55)) (+ 200 (rand-int 55)) (+ 200 (rand-int 55)) 255])
-        (. context putImageData image-data 0 0))
+        (pixels! image-data (map scale points) [(+ 200 (rand-int 55)) (+ 200 (rand-int 55)) (+ 200 (rand-int 55)) 255])
+        (put-image-data! context image-data)
+      )
       (fn [points]
         (take 63
           (card/sierpinskis
-            (map (fn [p] (map (comp (partial + 0.5) (partial * 0.5)) p)) (polygon 6))
+            (map (fn [p] (map (comp (partial + 0.5) (partial * 0.5)) p)) (card/polygon 6))
+            0.6
             (last points)
           )
         )

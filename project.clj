@@ -2,12 +2,13 @@
   :dependencies
   [
     [org.clojure/clojure "1.4.0"]
+    [incanter "1.4.1"]
   ]
   :plugins [[lein-cljsbuild "0.2.8"]]
   :source-paths ["./src/clj"]
   :cljsbuild
   {
-   :crossovers [card.x]
+   :crossovers [card]
    :builds {:dev
             {
               :source-path "./src/cljs"
