@@ -1,6 +1,7 @@
 # card
 
-A Christmas card
+A Christmas card, which is also a demonstration of how to run Clojure code on either the desktop or
+in a browser
 
 ## Usage
 
@@ -12,7 +13,16 @@ or
 
 lein cljsbuild once
 
-FIXME
+then open ./public/index.html
+
+OR,
+
+in a REPL,
+
+(use '[card.plot.test])
+(test-sierpinski)
+
+This will bring up an Incanter plot of the card.
 
 ## License
 
